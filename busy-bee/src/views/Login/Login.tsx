@@ -92,7 +92,7 @@ const Login = () => {
                 autoComplete="email"
                 placeholder="Email"
                 className={`input input-bordered w-full 
-                ${errorLoginForm.error && errorLoginForm.email ? 'input-error' : 'input-primary'}`}
+                ${errorLoginForm.error && errorLoginForm.email ? 'input-error' : 'input-warning'}`}
                 onChange={updateLoginForm('email')}
                 /> 
                 {errorLoginForm.error && errorLoginForm.email && <p className="text-red-500">{MSG_FIELD_REQUIRED}</p>}              
@@ -107,7 +107,7 @@ const Login = () => {
                 autoComplete="password"
                 placeholder='Password'
                 className={`input input-bordered w-full
-                ${errorLoginForm.error && errorLoginForm.password ? 'input-error' : 'input-primary'}`}
+                ${errorLoginForm.error && errorLoginForm.password ? 'input-error' : 'input-warning'}`}
                 onChange={updateLoginForm('password')}
               />
               {errorLoginForm.error && errorLoginForm.password && <p className="text-red-500">{MSG_FIELD_REQUIRED}</p>}
@@ -118,9 +118,9 @@ const Login = () => {
           <div className='flex justify-center'>
           <button
             type="button"
-            className="btn mt-[6px] border-0 bg-[#023e8a] text-center text-sm font-semibold text-[#ffffff] 
-            hover:bg-[#023e8a] focus-visible:outline focus-visible:outline-2 
-            focus-visible:outline-offset-2 focus-visible:outline-[#023e8a]"
+            className="btn mt-8 border-0 bg-yellow-600 text-center text-sm font-semibold text-[#ffffff] 
+            hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 
+            focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
             onClick={onLogin}
           >
             Login

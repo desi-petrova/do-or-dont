@@ -9,6 +9,8 @@ import AuthenticatedRoute from './hoc/AuthenticatedRoute/AuthenticatedRoute';
 import Body from './hoc/Body/Body';
 import NoPageFound from './views/NoPageFound/NoPageFound';
 import { auth } from './config/firebaseConfig';
+import Login from './views/Login/Login';
+import CreateAccount from './components/CreateAccount/CreateAccount';
 
 
 function App() {
@@ -62,6 +64,10 @@ function App() {
     <AppContext.Provider value={{ ...appState, setContext: setAppState }}>
       {!appState.loading && <Body>
         <Routes>
+
+        <Route path='/login' element={!appState.user && <Login />} />
+        <Route path='/createAccount' element={!appState.user && <CreateAccount />} />
+
 
           
 
