@@ -13,9 +13,7 @@ const NavButtons = ({ links }: NavLinksProps) => {
     <div className="flex mt-10 items-center justify-center">
        {links.map((link) => (
        <button key={link.name} 
-       className='btn mr-[10px] border-0 bg-yellow-600 text-center text-sm font-semibold text-black
-       hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 
-       focus-visible:outline-offset-2 focus-visible:outline-yellow-500 '
+       className='btn-primary'
        onClick= {() => navigate(link.path)}>{link.name}</button>
        ))}
     </div>

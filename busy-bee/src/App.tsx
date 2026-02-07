@@ -11,7 +11,8 @@ import NoPageFound from './views/NoPageFound/NoPageFound';
 import { auth } from './config/firebaseConfig';
 import Login from './views/Login/Login';
 import CreateAccount from './components/CreateAccount/CreateAccount';
-
+import CreateNewBoard from './components/CreateNewBoard/CreateNewBoard';
+import BoardView from './components/BoardView/BoardView';
 
 function App() {
   const [userAuth, loading] = useAuthState(auth);
@@ -67,6 +68,8 @@ function App() {
 
         <Route path='/login' element={!appState.user && <Login />} />
         <Route path='/createAccount' element={!appState.user && <CreateAccount />} />
+        <Route path='/createNewBoard' element={<AuthenticatedRoute><CreateNewBoard /> </AuthenticatedRoute>} />
+        <Route path='/boardView' element={<AuthenticatedRoute><BoardView /></AuthenticatedRoute>} />
 
 
           

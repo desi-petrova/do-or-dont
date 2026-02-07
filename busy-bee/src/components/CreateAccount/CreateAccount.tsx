@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import {NAMES_MIN_LENGTH, NAMES_MAX_LENGTH, USERNAME_MIN_LENGTH,
   EMAIL_REGEX, PASSWORD_MIN_LENGTH, MSG_FIELD_REQUIRED, 
-  MSG_USERNAME_TAKEN, MSG_EMAIL_TAKEN, MSG_EMAIL_INVALID
+  MSG_EMAIL_INVALID
 } from '../../common/constant.ts';
 import {createUserHandle, getUserByHandle} from '../../services/users.service.ts'
 import { registerUser } from '../../services/auth.service';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
 import AppContext from '../../context/AppContext';
 import type {FormUser, FormError} from '../../common/typeScriptDefinitions.ts'
 
@@ -101,7 +100,7 @@ const CreateAccount = () => {
         });
     })
     .then(() => {
-      navigate('/');
+      navigate('/login');
     })
     .catch(e => {
       if (e.toString().includes('auth/email-already-in-use')) setFormError({ ...formError, emailErr: true });
@@ -118,7 +117,7 @@ const CreateAccount = () => {
       <form className="mx-auto mt-20 max-w-xl sm:mt-20">
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
           <div>
-            <div className="mt-[10px]">
+            <div className="mt-2.5">
               <input
                 type="text"
                 name="first-name"
@@ -136,7 +135,8 @@ const CreateAccount = () => {
           </div>
           <div>
             
-            <div className="mt-[10px]">
+            <div className="mt-2.5
+            ">
               <input
                 type="text"
                 name="last-name"
@@ -153,7 +153,7 @@ const CreateAccount = () => {
           </div>
           <div className="sm:col-span-2">
             
-            <div className="mt-[10px]">
+            <div className="mt-2.5">
               <input
                 type="text"
                 name="username"
@@ -170,7 +170,7 @@ const CreateAccount = () => {
           </div>
           <div className="sm:col-span-2">
             
-            <div className="mt-[10px]">
+            <div className="mt-2.5">
               <input
                 type="password"
                 name="password"
@@ -186,7 +186,7 @@ const CreateAccount = () => {
             </div>
           </div>
           <div className="sm:col-span-2">
-            <div className="mt-[10px] ">
+            <div className="mt-2.5">
               <input
                 type="email"
                 name="email"
@@ -207,9 +207,7 @@ const CreateAccount = () => {
         <div className='flex justify-center'>
             <button
             type="button"
-            className="btn mt-8 border-0 bg-yellow-600 text-center text-sm font-semibold text-black
-            hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 
-            focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
+            className="btn-yellow mt-8"
             onClick={saveNewUser}
           >
             Register

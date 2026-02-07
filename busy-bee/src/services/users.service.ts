@@ -1,5 +1,6 @@
 import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onValue, remove } from 'firebase/database';
 import { db } from '../config/firebaseConfig.ts';
+import {updateUserBoards} from '../../services/users.service.ts';
 
 export const getUserByHandle = (handle: string): Promise<DataSnapshot> => {
   return get(ref(db, `users/${handle}`));
@@ -10,9 +11,7 @@ export const createUserHandle = (
   uid: string,
   email: string,
   firstName: string,
-  lastName: string,
-  phoneNumber: string,
-  role: string): Promise<void> => {
+  lastName: string): Promise<void> => {
 
   return set(ref(db, `users/${handle}`), {
     handle,
@@ -20,9 +19,8 @@ export const createUserHandle = (
     email,
     firstName,
     lastName,
-    phoneNumber,
     profilePhoto: '',
-    role,
+    role: "user",
     isBlocked: false,
   })
 };
@@ -35,8 +33,8 @@ export const updateUserData = (handle: string, key: string, value: string | bool
   return update(ref(db), { [`users/${handle}/${key}`]: value });
 };
 
-export const updateUserQuestionnaires = (uid: string, handle: string) => {
-  return update(ref(db), { [`users/${handle}/myQuestionnaires/${uid}`]: true })
+export const updateUserBoards = (uid: string, handle: string) => {
+  return update(ref(db), { [`users/${handle}/myBoards/${uid}`]: true })
 }
 
 export interface UserQuestionnaire { (questionnaires: string[]): void }

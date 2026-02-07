@@ -18,3 +18,13 @@ export interface FormError {
     emailErr: boolean,
     invalidImageFormat: boolean
   }
+
+  export interface NewBoard {
+    title: string
+  }
+
+  
+export interface FormNewBoardError {
+    formErr: boolean,
+    titleErr: boolean,
+  }
