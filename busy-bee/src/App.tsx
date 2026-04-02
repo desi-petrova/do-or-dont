@@ -70,6 +70,8 @@ function App() {
         <Route path='/createAccount' element={!appState.user && <CreateAccount />} />
         <Route path='/createNewBoard' element={<AuthenticatedRoute><CreateNewBoard /> </AuthenticatedRoute>} />
         <Route path='/boardView' element={<AuthenticatedRoute><BoardView /></AuthenticatedRoute>} />
+        <Route path='/boardView/:idBoard' element={<AuthenticatedRoute><BoardView /></AuthenticatedRoute>} />
+
 
 
           

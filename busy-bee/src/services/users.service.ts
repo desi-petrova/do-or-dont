@@ -1,6 +1,5 @@
 import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onValue, remove } from 'firebase/database';
 import { db } from '../config/firebaseConfig.ts';
-import {updateUserBoards} from '../../services/users.service.ts';
 
 export const getUserByHandle = (handle: string): Promise<DataSnapshot> => {
   return get(ref(db, `users/${handle}`));
@@ -35,6 +34,25 @@ export const updateUserData = (handle: string, key: string, value: string | bool
 
 export const updateUserBoards = (uid: string, handle: string) => {
   return update(ref(db), { [`users/${handle}/myBoards/${uid}`]: true })
+}
+
+export interface UserBoard { (boards: string[]): void }
+
+export const getUserBoardsLive = (handle: string, listener: UserBoard) => {
+
+  return onValue(ref(db, `users/${handle}/myBoards`), (snapshot) => {
+    if (!snapshot.exists()) return [];
+    const myBoards = Object.keys(snapshot.val());
+    return listener(myBoards)
+  })
+}
+
+export const updateUserCards = (uid: string, handle: string) => {
+  return update(ref(db), { [`users/${handle}/myCards/${uid}`]: true })
+}
+
+export const updateUserLists = (uid: string, handle: string) => {
+  return update(ref(db), { [`users/${handle}/myLists/${uid}`]: true })
 }
 
 export interface UserQuestionnaire { (questionnaires: string[]): void }

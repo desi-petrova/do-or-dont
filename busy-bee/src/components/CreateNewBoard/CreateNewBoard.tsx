@@ -1,6 +1,8 @@
 import { useState,useContext, useRef } from 'react'
 import type {NewBoard, FormNewBoardError} from '../../common/typeScriptDefinitions.ts'
-import {createNewBoard} from '../../services/boards.service.ts'
+import {createNewBoard, updateBoardLists } from '../../services/boards.service.ts'
+import {createNewList} from '../../services/lists.service.ts'
+import {updateUserLists} from '../../services/users.service.ts'
 import AppContext from '../../context/AppContext';
 import type { UserState } from '../../context/AppContext';
 import { updateUserBoards } from '../../services/users.service.ts';
@@ -53,12 +55,30 @@ const CreateNewBoard = () => {
             title: ''
           })
           
-          updateUserBoards(result.id, userData.handle)
-            .catch(e => console.error(e))     
+        updateUserBoards(result.id, userData.handle)
+          .catch(e => console.error(e))    
+        
+        createNewList("To do", result.id, userData.handle)
+        .then(resultList => {
+          updateUserLists(resultList.id, userData.handle) 
+          updateBoardLists(resultList.id, result.id)
+        })
+
+        createNewList("In progress", result.id, userData.handle)
+        .then(resultList => {
+          updateUserLists(resultList.id, userData.handle) 
+          updateBoardLists(resultList.id, result.id)
+        })
+
+        createNewList("Done", result.id, userData.handle)
+        .then(resultList => {
+          updateUserLists(resultList.id, userData.handle) 
+          updateBoardLists(resultList.id, result.id)
+        })
             
             return result.id
         })
-        .then(id => navigate('/boardView', {state: {id}}))
+        .then(idBoard => navigate('/boardView', {state: {idBoard}}))
         .catch(e => console.error(e))    
 
     }
@@ -90,11 +110,11 @@ const CreateNewBoard = () => {
                   saveNewBoard(e);
                   setOpen(false)
                 }}
-                
                 >Create Board</button>
+                
                 <button className="btn-primary" 
                  onClick={() =>
-                 (() => setOpen(false))
+                 (setOpen(false))
                  }
                 >Close</button>
            
