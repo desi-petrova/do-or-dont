@@ -31,25 +31,18 @@ const BoardsNav = () => {
     
 
     return (
-        <div>
-            <div className="flex items-center justify-between">
-                <h4 className="text-lg font-semibold">Boards:</h4>
-                <CreateNewBoard />
-            </div>            
-            <div>
-                {boards.length > 0 && boards.map(board => {
-                    return (
-                        <ul  
-                        key={board.id} 
-                        className="menu menu-md rounded-box w-56"
-                       >
-                            <li   className="cursor-pointer p-2 rounded hover:bg-orange-300 transition"
-                            onClick={() => navigate(`/boardView/${board.id}`)}>{board.title}</li>
-                        </ul>                        
-                    )
-                })}
-            </div>
-        
+        <div>    
+            {boards.length > 0 && boards.map(board => {
+                return (
+                    <ul  
+                    key={board.id} 
+                    className="menu menu-md rounded-box w-56"
+                   >
+                        <li   className="cursor-pointer p-1 rounded hover:bg-orange-300 transition"
+                        onClick={() => navigate(`/boardView/${board.id}`)}>{board.title}</li>
+                    </ul>                        
+                )
+            })}       
         </div>
        
     )

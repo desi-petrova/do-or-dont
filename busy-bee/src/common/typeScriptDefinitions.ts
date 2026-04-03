@@ -63,10 +63,10 @@ export interface CreateNewListProps {
 //Card
 export interface Card{
   id: string,
-    name: string,
-    owner: string,
-    boardId: string,
-    listId: string,
+  title: string,
+  owner: string,
+  boardId: string,
+  listId: string,
 }
 
 export interface NewCard {
@@ -80,4 +80,22 @@ export interface CardProps {
 export interface CreateNewCardProps {
   idBoard: string,
   idList: string,
+}
+
+export interface CardDetailsProps {
+  cardId: string
+}
+
+export interface CardDetails{
+  id: string,
+  title: string,
+  discription?: string,
+  labels?: string[], 
+  members?: string[],
+  checklist?: string[],
+  deadline?: string,
+  chat?: string[]
+  owner: string,
+  boardId: string,
+  listId: string,
 }

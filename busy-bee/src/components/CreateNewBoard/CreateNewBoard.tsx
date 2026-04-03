@@ -110,7 +110,7 @@ const CreateNewBoard = () => {
                   saveNewBoard(e);
                   setOpen(false)
                 }}
-                >Create Board</button>
+                >Save</button>
                 
                 <button className="btn-primary" 
                  onClick={() =>

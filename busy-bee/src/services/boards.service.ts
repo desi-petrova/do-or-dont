@@ -66,3 +66,14 @@ export const getBoardCardsLive = (boardId: string, listener: BoardCard) => {
     return listener(BoardCards)
   })
 }
+
+export interface BoardTitle { (title: string): void }
+
+export const getBoardTitleLive = (boardId: string, listener: BoardTitle) => {
+
+  return onValue(ref(db, `boards/${boardId}/title`), (snapshot) => {
+    if (!snapshot.exists()) return [];
+  
+    return listener(snapshot.val())
+  })
+}
