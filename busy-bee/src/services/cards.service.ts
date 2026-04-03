@@ -2,34 +2,37 @@ import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onVa
 import { db } from '../config/firebaseConfig.ts';
 
 export const createNewCard = (
-  name: string,
-  boardId: string
-  listId: string  ) => {
+  owner: string,
+  title: string,
+  boardId: string,
+  listId: string,  ) => {
 
-  return push(ref(db, `boards`), {
+  return push(ref(db, `cards`), {
   owner,
   title,
+  boardId,
+  listId,
   createdOn: Date.now(),
   })
    .then(result => {
         if(result.key === null) return [];
 
-        return getBoardById(result.key); 
+        return getCardById(result.key); 
     })
     .catch(e => console.error(e))
 };
 
-export const getBoardById = (id: string) => {
-    return get(ref(db, `boards/${id}`))
+export const getCardById = (id: string) => {
+    return get(ref(db, `cards/${id}`))
       .then(result => {
         if (!result.exists()) {
-          throw new Error(`Question with id ${id} does not exist!`);
+          throw new Error(`Card with id ${id} does not exist!`);
         }
-        const board = result.val();
-        board.id = id;
-        board.createdOn = new Date(board.createdOn);
+        const card = result.val();
+        card.id = id;
+        card.createdOn = new Date(card.createdOn);
 
-        return board;
+        return card;
       })
       .catch(e => console.error(e));
   };

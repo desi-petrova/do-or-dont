@@ -39,7 +39,6 @@ const BoardsNav = () => {
             <div>
                 {boards.length > 0 && boards.map(board => {
                     return (
-                        
                         <ul  
                         key={board.id} 
                         className="menu menu-md rounded-box w-56"
