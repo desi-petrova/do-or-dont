@@ -5,6 +5,7 @@ import {getBoardListsLive } from '../../services/boards.service.ts'
 import {getListById } from '../../services/lists.service.ts'
 import type {List} from '../../common/typeScriptDefinitions.ts'
 import { useParams } from "react-router-dom"
+import CreateNewList from '../CleateNewList/CleateNewList.tsx';
 
 
 const BoardView = () => {
@@ -35,7 +36,7 @@ const BoardView = () => {
             }
             )}
             <div className="min-w-75 shrink-0 h-full ">
-            <button className="btn-primary ">+ Add List</button>
+                <CreateNewList idBoard={idBoard}/>
             </div>
         </div>
            

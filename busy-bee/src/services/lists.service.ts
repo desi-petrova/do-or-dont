@@ -37,5 +37,17 @@ export const getListById = (id: string) => {
   };
 
   export const updateListCards = (cardId: string, listId: string) => {
-  return update(ref(db), { [`boards/${listId}/boardCards/${cardId}`]: true })
+  return update(ref(db), { [`lists/${listId}/listCards/${cardId}`]: true })
+}
+
+export interface ListCards { (lists: string[]): void }
+
+export const getListCardsLive = (listId: string, listener: ListCards) => {
+
+  return onValue(ref(db, `lists/${listId}/listCards`), (snapshot) => {
+    if (!snapshot.exists()) return [];
+    const listCards = Object.keys(snapshot.val());
+  
+    return listener(listCards)
+  })
 }

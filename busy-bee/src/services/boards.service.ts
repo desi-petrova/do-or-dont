@@ -48,8 +48,21 @@ export const getBoardListsLive = (boardId: string, listener: BoardList) => {
 
   return onValue(ref(db, `boards/${boardId}/boardLists`), (snapshot) => {
     if (!snapshot.exists()) return [];
-    const myBoards = Object.keys(snapshot.val());
+    const BoardLists = Object.keys(snapshot.val());
   
-    return listener(myBoards)
+    return listener(BoardLists)
+  })
+}
+
+
+export interface BoardCard { (lists: string[]): void }
+
+export const getBoardCardsLive = (boardId: string, listener: BoardCard) => {
+
+  return onValue(ref(db, `boards/${boardId}/boardCards`), (snapshot) => {
+    if (!snapshot.exists()) return [];
+    const BoardCards = Object.keys(snapshot.val());
+  
+    return listener(BoardCards)
   })
 }

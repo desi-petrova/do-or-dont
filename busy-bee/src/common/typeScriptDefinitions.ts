@@ -52,6 +52,14 @@ export interface ListProps {
   list: List
 }
 
+export interface NewList {
+    title: string
+  }
+
+export interface CreateNewListProps {
+  idBoard: string
+}
+
 //Card
 export interface Card{
   id: string,
@@ -61,6 +69,15 @@ export interface Card{
     listId: string,
 }
 
+export interface NewCard {
+    title: string
+  }
+
 export interface CardProps {
   card: Card
+}
+
+export interface CreateNewCardProps {
+  idBoard: string,
+  idList: string,
 }
