@@ -26,4 +26,4 @@ dist-ssr
 /node_modules/
 /package-lock.json
 /docs/
-/src/config/
+/src/config/firebaseConfig.ts
