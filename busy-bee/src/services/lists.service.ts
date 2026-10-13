@@ -1,5 +1,6 @@
 import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onValue, remove,push } from 'firebase/database';
 import { db } from '../config/firebaseConfig.ts';
+import type { ListCards } from '../common/typeScriptDefinitions.ts';
 
 export const createNewList = (
   name: string,
@@ -39,8 +40,6 @@ export const getListById = (id: string) => {
   export const updateListCards = (cardId: string, listId: string) => {
   return update(ref(db), { [`lists/${listId}/listCards/${cardId}`]: true })
 }
-
-export interface ListCards { (lists: string[]): void }
 
 export const getListCardsLive = (listId: string, listener: ListCards) => {
 

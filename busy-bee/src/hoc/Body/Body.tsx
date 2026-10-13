@@ -1,11 +1,7 @@
-import type { ReactNode, FC } from 'react';
+import type { FC } from 'react';
 import { FiLoader } from 'react-icons/fi';
 import SideBar from "../../components/SideBar/SideBar"
-
-interface BodyProps {
-  children: ReactNode;
-  loading: boolean;
-}
+import type { BodyProps } from '../../common/typeScriptDefinitions.ts';
 
 const Body: FC<BodyProps> = ({ children, loading }) => {
  

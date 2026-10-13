@@ -1,12 +1,7 @@
 import { useContext} from 'react';
-import type {ReactNode} from "react"
 import AppContext from '../../context/AppContext';
-import type {UserState} from '../../context/AppContext';
+import type { RouteProps, UserState } from '../../common/typeScriptDefinitions.ts';
 import { Navigate, useLocation  } from 'react-router-dom';
-
-interface RouteProps{
-  children: ReactNode
-}
 
 const AuthenticatedRoute = ({ children } : RouteProps) => {
   const { user, userData } = useContext<UserState>(AppContext);

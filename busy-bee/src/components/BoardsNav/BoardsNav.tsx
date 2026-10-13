@@ -3,8 +3,7 @@ import CreateNewBoard from "../CreateNewBoard/CreateNewBoard";
 import {getBoardById } from '../../services/boards.service.ts'
 import {getUserBoardsLive } from '../../services/users.service.ts'
 import AppContext from '../../context/AppContext';
-import type { UserState } from '../../context/AppContext';
-import type {Board} from '../../common/typeScriptDefinitions.ts'
+import type { Board, UserState } from '../../common/typeScriptDefinitions.ts'
 import { useNavigate } from "react-router-dom"
 
 

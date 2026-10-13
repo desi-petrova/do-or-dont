@@ -4,18 +4,7 @@ import { useContext } from 'react';
 import AppContext from '../../context/AppContext';
 import { loginUser } from '../../services/auth.service';
 import {MSG_FIELD_REQUIRED, MSG_WRONG_EMAIL_AND_PASSWORD} from '../../common/constant.ts';
-
-interface LoginForm{
-  email: string,
-  password: string,
-}
-
-interface ErrorLoginForm{
-  error: boolean,
-  fieldErr: boolean,
-  email: boolean,
-  password: boolean,
-}
+import type { ErrorLoginForm, LoginForm } from '../../common/typeScriptDefinitions.ts';
 
 const Login = () => {
     const { setContext } = useContext(AppContext);

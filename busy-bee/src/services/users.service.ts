@@ -1,5 +1,6 @@
 import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onValue, remove } from 'firebase/database';
 import { db } from '../config/firebaseConfig.ts';
+import type { UserBoard, UserCompletedQuizzesLive, UserData, UserQuestionnaire, UserUpcomingQuizzesLive } from '../common/typeScriptDefinitions.ts';
 
 export const getUserByHandle = (handle: string): Promise<DataSnapshot> => {
   return get(ref(db, `users/${handle}`));
@@ -36,8 +37,6 @@ export const updateUserBoards = (uid: string, handle: string) => {
   return update(ref(db), { [`users/${handle}/myBoards/${uid}`]: true })
 }
 
-export interface UserBoard { (boards: string[]): void }
-
 export const getUserBoardsLive = (handle: string, listener: UserBoard) => {
 
   return onValue(ref(db, `users/${handle}/myBoards`), (snapshot) => {
@@ -54,8 +53,6 @@ export const updateUserCards = (uid: string, handle: string) => {
 export const updateUserLists = (uid: string, handle: string) => {
   return update(ref(db), { [`users/${handle}/myLists/${uid}`]: true })
 }
-
-export interface UserQuestionnaire { (questionnaires: string[]): void }
 
 export const getUserQuestionnaireLive = (handle: string, listener: UserQuestionnaire) => {
 
@@ -86,11 +83,15 @@ export const getAllUsersData = (): Promise<DataSnapshot> => {
   return get(query(ref(db, 'users')));
 };
 
+export const getAllUsers = async (): Promise<UserData[]> => {
+  const snapshot = await getAllUsersData();
+  const users = snapshot.val() as Record<string, UserData> | null;
+  return users ? Object.values(users) : [];
+};
+
 export const updateUserUpcomingQuizzes = (handle: string, idQuestionnaire: string ) => {
   return update(ref(db), { [`users/${handle}/upcomingQuizzes/${idQuestionnaire}`]: true})
 }
-
-export interface UserUpcomingQuizzesLive { (questionnaires: string[]): void }
 
 export const getUserUpcomingQuizzesLive = (handle: string, listener: UserUpcomingQuizzesLive) => {
 
@@ -100,8 +101,6 @@ export const getUserUpcomingQuizzesLive = (handle: string, listener: UserUpcomin
     return listener(myQuestionnaires)
   })
 }
-
-export interface UserCompletedQuizzesLive { (questionnaires: string[]): void }
 
 export const getUserCompletedQuizzesLive = (handle: string, listener: UserCompletedQuizzesLive) => {
 

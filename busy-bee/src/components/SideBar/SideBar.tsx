@@ -7,12 +7,7 @@ import Members from '../Members/Members';
 import BoardsNav from '../BoardsNav/BoardsNav';
 import CreateNewBoard from '../CreateNewBoard/CreateNewBoard';
 import { FiLogOut } from "react-icons/fi";
-
-
-export interface LinksUserOptionsType {
-  name: string,
-  path: string
-}
+import type { LinksUserOptionsType } from '../../common/typeScriptDefinitions.ts';
 
 const LinksUserOptions: LinksUserOptionsType[] = [
   { name: 'Create Account', path: '/createAccount' },
@@ -46,8 +41,7 @@ const SideBar = () => {
       {userData ? (
         <nav className="flex flex-col flex-1 overflow-hidden">
           <div className="flex flex-col min-h-30 mb-3">
-            <p className="px-4 shrink-0">Members:</p>
-            <div className="overflow-y-auto custom-scroll px-4">
+            <div className="overflow-y-auto custom-scroll">
               <Members />
             </div>
           </div>

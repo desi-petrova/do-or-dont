@@ -1,9 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import type {LinksUserOptionsType} from "../SideBar/SideBar"
-
-  interface NavLinksProps {
-    links: LinksUserOptionsType[];
-  }
+import type { NavLinksProps } from '../../common/typeScriptDefinitions.ts';
 
 const NavButtons = ({ links }: NavLinksProps) => {
     const navigate = useNavigate();

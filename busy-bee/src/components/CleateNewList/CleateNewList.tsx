@@ -1,10 +1,9 @@
 import { useState,useContext, useRef } from 'react'
-import type {NewList, FormNewListError, CreateNewListProps} from '../../common/typeScriptDefinitions.ts'
+import type {NewList, FormNewListError, CreateNewListProps, UserState} from '../../common/typeScriptDefinitions.ts'
 import {updateBoardLists } from '../../services/boards.service.ts'
 import {createNewList} from '../../services/lists.service.ts'
 import {updateUserLists} from '../../services/users.service.ts'
 import AppContext from '../../context/AppContext';
-import type { UserState } from '../../context/AppContext';
 
 const CreateNewList = ({ idBoard }: CreateNewListProps) => {
 

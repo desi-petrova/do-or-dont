@@ -1,10 +1,9 @@
 import { useState,useContext, useRef } from 'react'
-import type {NewBoard, FormNewBoardError} from '../../common/typeScriptDefinitions.ts'
+import type {NewBoard, FormNewBoardError, UserState} from '../../common/typeScriptDefinitions.ts'
 import {createNewBoard, updateBoardLists } from '../../services/boards.service.ts'
 import {createNewList} from '../../services/lists.service.ts'
 import {updateUserLists} from '../../services/users.service.ts'
 import AppContext from '../../context/AppContext';
-import type { UserState } from '../../context/AppContext';
 import { updateUserBoards } from '../../services/users.service.ts';
 import { useNavigate } from 'react-router-dom';
 
@@ -78,7 +77,7 @@ const CreateNewBoard = () => {
             
             return result.id
         })
-        .then(idBoard => navigate('/boardView', {state: {idBoard}}))
+        .then(idBoard => navigate(`/boardView/${idBoard}`))
         .catch(e => console.error(e))    
 
     }

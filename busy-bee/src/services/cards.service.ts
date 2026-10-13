@@ -1,5 +1,6 @@
 import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onValue, remove,push } from 'firebase/database';
 import { db } from '../config/firebaseConfig.ts';
+import type { CardDetails, CardLive } from '../common/typeScriptDefinitions.ts';
 
 export const createNewCard = (
   owner: string,
@@ -36,3 +37,16 @@ export const getCardById = (id: string) => {
       })
       .catch(e => console.error(e));
   };
+
+export const getCardLive = (cardId: string, listener: CardLive) => {
+
+  return onValue(ref(db, `cards/${cardId}`), (snapshot) => {
+    if (!snapshot.exists()) return [];
+    const card = snapshot.val();
+        card.id = cardId;
+        card.createdOn = new Date(card.createdOn);
+
+  
+    return listener(card)
+  })
+}

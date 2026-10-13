@@ -1,11 +1,10 @@
 import { useState,useContext, useRef } from 'react'
-import type {NewCard, FormNewCardError, CreateNewCardProps} from '../../common/typeScriptDefinitions.ts'
+import type {NewCard, FormNewCardError, CreateNewCardProps, UserState} from '../../common/typeScriptDefinitions.ts'
 import {updateBoardCards } from '../../services/boards.service.ts'
 import {updateListCards} from '../../services/lists.service.ts'
 import {createNewCard} from '../../services/cards.service.ts'
 import {updateUserCards} from '../../services/users.service.ts'
 import AppContext from '../../context/AppContext';
-import type { UserState } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 const CreateNewCard = ({ idBoard, idList }: CreateNewCardProps) => {
