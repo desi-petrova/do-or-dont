@@ -27,3 +27,4 @@ dist-ssr
 /package-lock.json
 /docs/
 /src/config/firebaseConfig.ts
+AGENTS.md 

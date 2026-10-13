@@ -17,32 +17,34 @@ import BoardView from './components/BoardView/BoardView';
 function App() {
   const [userAuth, loading] = useAuthState(auth);
   const [appState, setAppState] = useState<UserState>({
-    loading: userAuth == null ? false : true,
+    loading: true,
     user: null,
     userData: null,
     callObject: null,
     setContext: () => { },
   });
 
-  if (appState.user !== userAuth) {
-    setAppState((prevState: UserState) => ({
-      ...prevState,
-      user: userAuth || null,
-    }));
-  }
-
   useEffect(() => {
-    if (userAuth === null || userAuth === undefined) {
-      if (!loading) {
-        setTimeout(() => {
-        setAppState(prevState => ({
-          ...prevState,
-          loading: false,
-        }));
-        }, 0);
-      }
+    if (loading) return;
+
+    if (!userAuth) {
+      setAppState(prevState => ({
+        ...prevState,
+        loading: false,
+        user: null,
+        userData: null,
+      }));
       return;
     }
+
+    let isCurrent = true;
+
+    setAppState(prevState => ({
+      ...prevState,
+      loading: true,
+      user: userAuth,
+      userData: null,
+    }));
 
     getUserData(userAuth.uid)
       .then(snapshot => {
@@ -50,20 +52,35 @@ function App() {
           throw new Error('Something went wrong!');
         }
 
+        if (isCurrent) {
+          setAppState(prevState => ({
+            ...prevState,
+            loading: false,
+            userData: snapshot.val()[Object.keys(snapshot.val())[0]],
+          }));
+        }
+      })
+      .catch(e => {
+        if (!isCurrent) return;
+
         setAppState(prevState => ({
           ...prevState,
           loading: false,
-          userData: snapshot.val()[Object.keys(snapshot.val())[0]],
+          userData: null,
         }));
-      })
-      .catch(e => alert(e.message))
+        alert(e.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
   }, [userAuth, loading]);
 
   return (
     <div>
     <Router>
     <AppContext.Provider value={{ ...appState, setContext: setAppState }}>
-      {!appState.loading && <Body>
+      <Body loading={appState.loading}>
         <Routes>
 
         <Route path='/login' element={!appState.user && <Login />} />
@@ -78,7 +95,7 @@ function App() {
 
         <Route path='*' element={<NoPageFound />} />
         </Routes>
-      </Body>}
+      </Body>
     </AppContext.Provider>
     </Router>
     </div>
