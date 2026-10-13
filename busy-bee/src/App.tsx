@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react'
 import './App.css'
 import AppContext from './context/AppContext'; 
-import type { UserState } from './context/AppContext'; 
+import type { UserState } from './common/typeScriptDefinitions';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { getUserData } from './services/users.service';
 import { useAuthState } from 'react-firebase-hooks/auth';

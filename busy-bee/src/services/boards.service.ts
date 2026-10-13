@@ -1,9 +1,10 @@
 import { get, set, ref, query, equalTo, orderByChild, update, DataSnapshot, onValue, remove,push } from 'firebase/database';
 import { db } from '../config/firebaseConfig.ts';
+import type { BoardCard, BoardList, BoardMembers, BoardTitle, UserData } from '../common/typeScriptDefinitions.ts';
 
 export const createNewBoard = (
   owner: string,
-  title:string) => {
+  title: string) => {
 
   return push(ref(db, `boards`), {
   owner,
@@ -42,7 +43,25 @@ export const updateBoardCards = (cardId: string, boardId: string) => {
   return update(ref(db), { [`boards/${boardId}/boardCards/${cardId}`]: true })
 }
 
-export interface BoardList { (lists: string[]): void }
+export const addBoardMembers = (boardId: string, members: UserData[]) => {
+  const updates: Record<string, boolean> = {};
+
+  members.forEach(member => {
+    updates[`boards/${boardId}/boardMembers/${member.uid}`] = true;
+    updates[`users/${member.handle}/myBoards/${boardId}`] = true;
+  });
+
+  return Object.keys(updates).length > 0
+    ? update(ref(db), updates)
+    : Promise.resolve();
+};
+
+export const getBoardMembersLive = (boardId: string, listener: BoardMembers) => {
+  return onValue(ref(db, `boards/${boardId}/boardMembers`), snapshot => {
+    const memberUids = snapshot.exists() ? Object.keys(snapshot.val()) : [];
+    listener(memberUids);
+  });
+};
 
 export const getBoardListsLive = (boardId: string, listener: BoardList) => {
 
@@ -55,8 +74,6 @@ export const getBoardListsLive = (boardId: string, listener: BoardList) => {
 }
 
 
-export interface BoardCard { (lists: string[]): void }
-
 export const getBoardCardsLive = (boardId: string, listener: BoardCard) => {
 
   return onValue(ref(db, `boards/${boardId}/boardCards`), (snapshot) => {
@@ -66,8 +83,6 @@ export const getBoardCardsLive = (boardId: string, listener: BoardCard) => {
     return listener(BoardCards)
   })
 }
-
-export interface BoardTitle { (title: string): void }
 
 export const getBoardTitleLive = (boardId: string, listener: BoardTitle) => {
 
