@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { CardProps, UserData } from '../../common/typeScriptDefinitions.ts'
 import { getInitials } from '../../common/userUtils.ts'
+import { getCardLabelColor } from '../../common/cardLabels.ts'
 import { getCardLive } from '../../services/cards.service.ts'
 import { getUserByUid } from '../../services/users.service.ts'
 import CardDetails from '../CardDetails/CardDetails.tsx'
@@ -8,10 +9,14 @@ import CardDetails from '../CardDetails/CardDetails.tsx'
 const CardView = ({ card }: CardProps) => {
     const [memberUids, setMemberUids] = useState<string[]>([])
     const [members, setMembers] = useState<UserData[]>([])
+    const [labels, setLabels] = useState<string[]>([])
+    const [cardTitle, setCardTitle] = useState(card.title)
 
     useEffect(() => {
         return getCardLive(card.id, cardDetails => {
             setMemberUids(cardDetails.members ?? [])
+            setLabels(cardDetails.labels ?? [])
+            setCardTitle(cardDetails.title)
         })
     }, [card.id])
 
@@ -38,7 +43,19 @@ const CardView = ({ card }: CardProps) => {
         <div>
             <div className="card min-w-40 bg-base-100 card-xs shadow-sm">
                 <div className="card-body">
-                    <h2 className="card-title">{card.title}</h2>
+                    <h2 className="card-title">{cardTitle}</h2>
+                    {labels.length > 0 && (
+                        <ul className="flex flex-wrap gap-1" aria-label="Card labels">
+                            {labels.map(label => (
+                                <li
+                                    key={label}
+                                    className={`h-2 w-8 rounded ${getCardLabelColor(label)}`}
+                                    title={label}
+                                    aria-label={`${label} label`}
+                                />
+                            ))}
+                        </ul>
+                    )}
                     {members.length > 0 && (
                         <ul className="flex max-w-full flex-nowrap items-center -space-x-2 overflow-visible" aria-label="Card members">
                             {members.map(member => (

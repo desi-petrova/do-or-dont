@@ -42,6 +42,17 @@ export const updateCardMembers = (cardId: string, members: string[]) => {
   return update(ref(db, `cards/${cardId}`), { members: members.length > 0 ? members : null });
 };
 
+export const updateCardLabels = (cardId: string, labels: string[]) => {
+  return update(ref(db, `cards/${cardId}`), { labels: labels.length > 0 ? labels : null });
+};
+
+export const updateCardContent = (cardId: string, title: string, description: string) => {
+  return update(ref(db, `cards/${cardId}`), {
+    title,
+    discription: description || null,
+  });
+};
+
 export const getCardLive = (cardId: string, listener: CardLive) => {
 
   return onValue(ref(db, `cards/${cardId}`), (snapshot) => {
