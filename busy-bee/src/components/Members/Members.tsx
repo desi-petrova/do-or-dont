@@ -2,12 +2,10 @@ import { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppContext from '../../context/AppContext';
 import type { UserData } from '../../common/typeScriptDefinitions.ts';
+import { getInitials } from '../../common/userUtils.ts';
 import { addBoardMembers, getBoardById, getBoardMembersLive } from '../../services/boards.service.ts';
 import { getAllUsers, getUserData, getUserByHandle } from '../../services/users.service.ts';
 import UserSearchDropdown from '../UserSearchDropdown/UserSearchDropdown';
-
-const getInitials = (user: UserData) =>
-  `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
 
 const Members = () => {
   const location = useLocation();

@@ -6,6 +6,7 @@ import {getListById } from '../../services/lists.service.ts'
 import type {List} from '../../common/typeScriptDefinitions.ts'
 import { useParams } from "react-router-dom"
 import CreateNewList from '../CleateNewList/CleateNewList.tsx';
+import CardDetails from '../CardDetails/CardDetails.tsx';
 
 
 const BoardView = () => {
@@ -45,7 +46,7 @@ const BoardView = () => {
             <h2 className="text-2xl font-semibold p-4 shrink-0">
                 {boardTitle}
             </h2>
-            <div className="flex gap-6 overflow-x-auto overflow-y-hidden px-4 pb-4 flex-1 custom-scroll">
+            <div className="flex gap-6 overflow-x-auto overflow-y-hidden px-4 pb-4 flex-1 custom-scroll ">
                 {lists.length > 0 && lists.map(list => (
                 <div key={list.id} className="min-w-55 h-full shrink-0">
                     <ListView list={list} />

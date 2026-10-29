@@ -38,6 +38,10 @@ export const getCardById = (id: string) => {
       .catch(e => console.error(e));
   };
 
+export const updateCardMembers = (cardId: string, members: string[]) => {
+  return update(ref(db, `cards/${cardId}`), { members });
+};
+
 export const getCardLive = (cardId: string, listener: CardLive) => {
 
   return onValue(ref(db, `cards/${cardId}`), (snapshot) => {

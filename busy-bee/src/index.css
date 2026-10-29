@@ -1,12 +1,17 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@theme {
+    --color-olive-100: oklch(98.6% 0.002 67.8);
+    
+}
+
 .btn-yellow {
   border: 0;
   background-color: #ca8a04; /* yellow-600 */
   text-align: center;
-  font-size: 0.875rem; /* text-sm */
-  font-weight: 600; /* font-semibold */
+  font-size: 0.875rem; 
+  font-weight: 600; 
   color: #000000;
 }
 

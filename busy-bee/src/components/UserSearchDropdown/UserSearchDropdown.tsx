@@ -1,9 +1,7 @@
 import { useId, useState } from 'react';
 import type { FocusEvent, KeyboardEvent } from 'react';
 import type { UserData, UserSearchDropdownProps } from '../../common/typeScriptDefinitions.ts';
-
-const getInitials = (user: UserData) =>
-  `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+import { getInitials } from '../../common/userUtils.ts';
 
 const UserSearchDropdown = ({
   users,

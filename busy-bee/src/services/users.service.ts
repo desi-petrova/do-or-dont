@@ -29,6 +29,12 @@ export const getUserData = (uid: string): Promise<DataSnapshot> => {
   return get(query(ref(db, 'users'), orderByChild('uid'), equalTo(uid)));
 };
 
+export const getUserByUid = async (uid: string): Promise<UserData | null> => {
+  const snapshot = await getUserData(uid);
+  const users = snapshot.val() as Record<string, UserData> | null;
+  return users ? Object.values(users)[0] ?? null : null;
+};
+
 export const updateUserData = (handle: string, key: string, value: string | boolean): Promise<void> => {
   return update(ref(db), { [`users/${handle}/${key}`]: value });
 };
