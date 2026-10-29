@@ -36,7 +36,7 @@ const SideBar = () => {
   return(
     <div className="w-75 h-screen bg-orange-200 flex flex-col overflow-hidden">
       <div className="flex w-60 items-center justify-center p-4 shrink-0">
-        <img src="Logo.png" alt="Logo" />
+        <img src={`${import.meta.env.BASE_URL}Logo.png`} alt="Logo" />
       </div>
       {userData ? (
         <nav className="flex flex-col flex-1 overflow-hidden">

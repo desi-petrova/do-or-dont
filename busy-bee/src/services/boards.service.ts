@@ -56,6 +56,30 @@ export const addBoardMembers = (boardId: string, members: UserData[]) => {
     : Promise.resolve();
 };
 
+export const removeBoardMember = async (boardId: string, member: UserData) => {
+  const boardSnapshot = await get(ref(db, `boards/${boardId}/boardCards`));
+  const cardIds: string[] = boardSnapshot.exists() ? Object.keys(boardSnapshot.val()) : [];
+  const cardSnapshots = await Promise.all(
+    cardIds.map(cardId => get(ref(db, `cards/${cardId}`)))
+  );
+  const updates: Record<string, string[] | null> = {
+    [`boards/${boardId}/boardMembers/${member.uid}`]: null,
+    [`users/${member.handle}/myBoards/${boardId}`]: null,
+  };
+
+  cardSnapshots.forEach((snapshot, index) => {
+    if (!snapshot.exists()) return;
+
+    const members = snapshot.child('members').val() as string[] | null;
+    if (members?.includes(member.uid)) {
+      const remainingMembers = members.filter(uid => uid !== member.uid);
+      updates[`cards/${cardIds[index]}/members`] = remainingMembers.length > 0 ? remainingMembers : null;
+    }
+  });
+
+  return update(ref(db), updates);
+};
+
 export const getBoardMembersLive = (boardId: string, listener: BoardMembers) => {
   return onValue(ref(db, `boards/${boardId}/boardMembers`), snapshot => {
     const memberUids = snapshot.exists() ? Object.keys(snapshot.val()) : [];

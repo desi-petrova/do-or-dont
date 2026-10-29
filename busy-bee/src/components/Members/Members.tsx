@@ -3,9 +3,10 @@ import { useLocation } from 'react-router-dom';
 import AppContext from '../../context/AppContext';
 import type { UserData } from '../../common/typeScriptDefinitions.ts';
 import { getInitials } from '../../common/userUtils.ts';
-import { addBoardMembers, getBoardById, getBoardMembersLive } from '../../services/boards.service.ts';
+import { addBoardMembers, getBoardById, getBoardMembersLive, removeBoardMember } from '../../services/boards.service.ts';
 import { getAllUsers, getUserData, getUserByHandle } from '../../services/users.service.ts';
 import UserSearchDropdown from '../UserSearchDropdown/UserSearchDropdown';
+import { MdDelete } from "react-icons/md";
 
 const Members = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const Members = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [removingMemberUid, setRemovingMemberUid] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -133,6 +135,23 @@ const Members = () => {
       .finally(() => setIsSaving(false));
   };
 
+  const handleRemoveMember = (member: UserData) => {
+    if (!boardId || !isBoardOwner || removingMemberUid) return;
+    const confirmed = window.confirm(
+      `Remove ${member.firstName} ${member.lastName} from this board? They will also be removed from any cards associated with this board.`
+    );
+    if (!confirmed) return;
+
+    setRemovingMemberUid(member.uid);
+    setErrorMessage('');
+    removeBoardMember(boardId, member)
+      .catch(error => {
+        console.error('Could not remove the board member:', error);
+        setErrorMessage('Could not remove this member. Please try again.');
+      })
+      .finally(() => setRemovingMemberUid(''));
+  };
+
   return (
     <div className="flex min-h-0 flex-col gap-2">
       <div className="flex items-center justify-between px-4">
@@ -165,11 +184,27 @@ const Members = () => {
                   ) : getInitials(member)}
                 </span>
               </span>
-              <span className="truncate text-sm">{member.firstName} {member.lastName}</span>
+              <span className="min-w-0 flex-1 truncate text-sm">{member.firstName} {member.lastName}</span>
+              {isBoardOwner && (
+                <button
+                  type="button"
+                  className="btn-primary-hover shrink-0"
+                  onClick={() => handleRemoveMember(member)}
+                  disabled={Boolean(removingMemberUid)}
+                  aria-label={`Remove ${member.firstName} ${member.lastName} from this board`}
+                  title="Remove member"
+                >
+                  {/* <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18m-2 0-.9 14H5.9L5 6m4 0V4h6v2m-5 4v6m4-6v6" />
+                  </svg> */}
+                  <MdDelete />
+                </button>
+              )}
             </li>
           ))}
         </ul>
       )}
+      {errorMessage && !isAddDialogOpen && <p className="px-4 text-sm text-error">{errorMessage}</p>}
 
       {isAddDialogOpen && (
         <div className="modal modal-open" role="presentation">

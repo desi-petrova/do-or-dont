@@ -39,7 +39,7 @@ export const getCardById = (id: string) => {
   };
 
 export const updateCardMembers = (cardId: string, members: string[]) => {
-  return update(ref(db, `cards/${cardId}`), { members });
+  return update(ref(db, `cards/${cardId}`), { members: members.length > 0 ? members : null });
 };
 
 export const getCardLive = (cardId: string, listener: CardLive) => {

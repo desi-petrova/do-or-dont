@@ -109,6 +109,23 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
       .finally(() => setIsSavingMember(false));
   };
 
+  const removeCardMember = (member: UserData) => {
+    if (isSavingMember || !assignedMemberUids.includes(member.uid)) return;
+
+    const updatedMemberUids = assignedMemberUids.filter(uid => uid !== member.uid);
+    setIsSavingMember(true);
+    setMemberError('');
+    setCardDetails(current => ({ ...current, members: updatedMemberUids }));
+
+    updateCardMembers(cardId, updatedMemberUids)
+      .catch(error => {
+        console.error('Could not remove the card member:', error);
+        setCardDetails(current => ({ ...current, members: assignedMemberUids }));
+        setMemberError('Could not remove this member. Please try again.');
+      })
+      .finally(() => setIsSavingMember(false));
+  };
+
   return (
     <div>
       <button className="btn-primary-hover" onClick={() => setOpen(true)}>
@@ -142,6 +159,16 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
                         </span>
                       </span>
                       <span className="text-sm">{member.firstName} {member.lastName}</span>
+                      <button
+                        type="button"
+                        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs leading-none transition-colors hover:bg-yellow-500 focus-visible:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-600"
+                        onClick={() => removeCardMember(member)}
+                        disabled={isSavingMember}
+                        aria-label={`Remove ${member.firstName} ${member.lastName} from this card`}
+                        title="Remove from card"
+                      >
+                        ×
+                      </button>
                     </li>
                   ))}
                 </ul>
