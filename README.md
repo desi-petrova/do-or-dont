@@ -81,7 +81,7 @@ This project is currently configured to work with Firebase.
 
 All service files and database logic are created for:
 * Firebase Authentication
-* Firestore Database
+* Firebase Realtime Database
 
 You can use another database or backend service if needed, but additional configuration and service updates will be required.
 
@@ -105,10 +105,13 @@ Users can create and manage multiple boards for different projects, workflows, o
 
 Current board functionalities include:
 * Create new boards
-* Automatically save boards to Firestore Database
+* Save boards to Firebase Realtime Database
 * Display all user boards inside the sidebar
 * Quick navigation between boards
 * Organized workspace structure for better project management
+* Board owners can add members by searching users by name, handle, or email
+* View board member names and avatars in the sidebar
+* Remove board members; removing a member also removes them from cards on that board
 
 Each board acts as an independent workspace where users can organize tasks and track progress.
 
@@ -127,6 +130,12 @@ Users can:
 * Organize tasks by workflow stage
 * Visually separate completed and active tasks
 * Manage multiple tasks inside different boards
+* Assign card members from the board's existing members
+* View assigned member avatars on each card
+* Remove members from individual cards
+* Edit a card's name inline
+* Add a description, then click its displayed text to edit it
+* Add or remove colored labels: Urgent, Pending, In Progress, Needs Review, Blocked, Complete, and Low Priority; labels appear as named badges in card details and as color markers on the board
 
 The current system provides a simple and clean workflow management experience that can easily scale with future features.
 
@@ -142,18 +151,19 @@ Features include:
 
 The sidebar updates dynamically based on user-created content stored in the database.
 
-**5. Real-Time Database Integration**
+**5. Realtime Database Integration**
 
-The application uses Firebase Firestore Database for storing and managing application data.
+The application uses Firebase Realtime Database for storing and managing application data.
 
 Current integration includes:
 * Saving user authentication data
 * Storing boards and task lists
 * Persisting task cards
-* Synchronizing user content with the database
+* Persisting board members, card assignments, labels, card names, and descriptions
+* Synchronizing user content with the database through live listeners
 * Fast and scalable cloud-based storage
 
-This architecture allows the project to scale easily and prepares the application for future real-time collaboration features.
+Live listeners keep board and card data synchronized with changes in the database.
 
 **6. Responsive User Interface**
 
@@ -172,16 +182,11 @@ The goal is to provide a smooth and productive experience across different scree
 ### 5. Upcoming Features
 
 Planned features for future development:
-* Board members and team collaboration
-* Card details page/modal
-* Task descriptions
 * Due dates
 * File attachments
 * Comments system
 * Drag & drop functionality
-* Labels and priorities
 * Activity history
-* Real-time updates
 * Notifications
 * Dark mode
 * Search and filtering
