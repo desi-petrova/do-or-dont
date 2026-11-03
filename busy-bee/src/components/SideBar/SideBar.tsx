@@ -6,6 +6,7 @@ import NavButtons from '../NavButtons/NavButtons';
 import Members from '../Members/Members';
 import BoardsNav from '../BoardsNav/BoardsNav';
 import CreateNewBoard from '../CreateNewBoard/CreateNewBoard';
+import Profile from '../Profile/Profile';
 import { FiLogOut } from "react-icons/fi";
 import type { LinksUserOptionsType } from '../../common/typeScriptDefinitions.ts';
 
@@ -57,7 +58,7 @@ const SideBar = () => {
 
           <div className="border-t p-4 shrink-0">
             <div className="flex justify-between items-center">
-              <button className="btn-primary-hover">Profile</button>
+              <Profile />
               <button className="btn-primary-hover" onClick={onLogout}>
                 <FiLogOut />
               </button>

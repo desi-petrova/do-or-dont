@@ -39,6 +39,10 @@ export const updateUserData = (handle: string, key: string, value: string | bool
   return update(ref(db), { [`users/${handle}/${key}`]: value });
 };
 
+export const updateUserProfile = (handle: string, firstName: string, lastName: string): Promise<void> => {
+  return update(ref(db, `users/${handle}`), { firstName, lastName });
+};
+
 export const updateUserBoards = (uid: string, handle: string) => {
   return update(ref(db), { [`users/${handle}/myBoards/${uid}`]: true })
 }
