@@ -53,6 +53,30 @@ export const updateCardContent = (cardId: string, title: string, description: st
   });
 };
 
+export const updateCardDeadline = (cardId: string, deadline: string) => {
+  return update(ref(db, `cards/${cardId}`), { deadline: deadline || null });
+};
+
+export const addCardChecklistItem = (cardId: string, text: string) => {
+  return push(ref(db, `cards/${cardId}/checklistItems`), { text, completed: false });
+};
+
+export const updateCardChecklistItem = (cardId: string, itemId: string, completed: boolean) => {
+  return update(ref(db, `cards/${cardId}/checklistItems/${itemId}`), { completed });
+};
+
+export const removeCardChecklistItem = (cardId: string, itemId: string) => {
+  return remove(ref(db, `cards/${cardId}/checklistItems/${itemId}`));
+};
+
+export const addCardComment = (cardId: string, uid: string, text: string) => {
+  return push(ref(db, `cards/${cardId}/comments`), {
+    uid,
+    text,
+    createdAt: Date.now(),
+  });
+};
+
 export const getCardLive = (cardId: string, listener: CardLive) => {
 
   return onValue(ref(db, `cards/${cardId}`), (snapshot) => {

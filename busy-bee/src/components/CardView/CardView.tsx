@@ -11,12 +11,14 @@ const CardView = ({ card }: CardProps) => {
     const [members, setMembers] = useState<UserData[]>([])
     const [labels, setLabels] = useState<string[]>([])
     const [cardTitle, setCardTitle] = useState(card.title)
+    const [deadline, setDeadline] = useState<string | undefined>()
 
     useEffect(() => {
         return getCardLive(card.id, cardDetails => {
             setMemberUids(cardDetails.members ?? [])
             setLabels(cardDetails.labels ?? [])
             setCardTitle(cardDetails.title)
+            setDeadline(cardDetails.deadline)
         })
     }, [card.id])
 
@@ -39,11 +41,21 @@ const CardView = ({ card }: CardProps) => {
         return () => { isCurrent = false }
     }, [memberUids])
 
+    const deadlineDate = deadline ? new Date(deadline) : null
+    const formattedDeadline = deadlineDate && !Number.isNaN(deadlineDate.getTime())
+        ? deadlineDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+        : ''
+
     return (
         <div>
             <div className="card min-w-40 bg-base-100 card-xs shadow-sm">
                 <div className="card-body">
                     <h2 className="card-title">{cardTitle}</h2>
+                    {formattedDeadline && deadlineDate && (
+                        <time className="text-xs opacity-70" dateTime={deadline} title={deadlineDate.toLocaleString()}>
+                            {formattedDeadline}
+                        </time>
+                    )}
                     {labels.length > 0 && (
                         <ul className="flex flex-wrap gap-1" aria-label="Card labels">
                             {labels.map(label => (

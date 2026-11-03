@@ -170,11 +170,24 @@ export interface CardDetails{
   labels?: string[], 
   members?: string[],
   checklist?: string[],
+  checklistItems?: Record<string, CardChecklistItem>,
+  comments?: Record<string, CardComment>,
   deadline?: string,
   chat?: string[]
   owner: string,
   boardId: string,
   listId: string,
+}
+
+export interface CardChecklistItem {
+  text: string,
+  completed: boolean,
+}
+
+export interface CardComment {
+  uid: string,
+  text: string,
+  createdAt: number,
 }
 
 export interface CardDetailsProps {

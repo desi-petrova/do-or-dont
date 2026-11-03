@@ -1,14 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import type { FormEvent } from 'react';
 import type { CardDetails as CardDetailsType, CardDetailsProps, UserData } from '../../common/typeScriptDefinitions.ts';
 import { getInitials } from '../../common/userUtils.ts';
-import { getCardLive, updateCardContent, updateCardLabels, updateCardMembers } from '../../services/cards.service.ts';
+import {
+  addCardComment,
+  addCardChecklistItem,
+  getCardLive,
+  removeCardChecklistItem,
+  updateCardChecklistItem,
+  updateCardContent,
+  updateCardDeadline,
+  updateCardLabels,
+  updateCardMembers,
+} from '../../services/cards.service.ts';
 import { getBoardById, getBoardMembersLive } from '../../services/boards.service.ts';
 import { getUserByHandle, getUserByUid } from '../../services/users.service.ts';
 import { CARD_LABELS, getCardLabelColor } from '../../common/cardLabels.ts';
 import UserSearchDropdown from '../UserSearchDropdown/UserSearchDropdown';
 import { FaCheck, FaRegEdit } from 'react-icons/fa';
+import AppContext from '../../context/AppContext';
+
+const toLocalDateTimeValue = (dateValue?: string): string => {
+  if (!dateValue) return '';
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+};
 
 const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
+  const { userData } = useContext(AppContext);
   const [open, setOpen] = useState(false);
   const [cardDetails, setCardDetails] = useState<CardDetailsType>(initialCard);
   const [boardMembers, setBoardMembers] = useState<UserData[]>([]);
@@ -24,6 +44,19 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
   const [isEditingDescription, setIsEditingDescription] = useState(!initialCard.discription);
   const [isSavingDetails, setIsSavingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState('');
+  const [isDeadlineEditorOpen, setIsDeadlineEditorOpen] = useState(false);
+  const [deadlineInput, setDeadlineInput] = useState(toLocalDateTimeValue(initialCard.deadline));
+  const [isSavingDeadline, setIsSavingDeadline] = useState(false);
+  const [deadlineError, setDeadlineError] = useState('');
+  const [isChecklistOpen, setIsChecklistOpen] = useState(false);
+  const [newChecklistItem, setNewChecklistItem] = useState('');
+  const [isSavingChecklist, setIsSavingChecklist] = useState(false);
+  const [checklistError, setChecklistError] = useState('');
+  const [commentText, setCommentText] = useState('');
+  const [isSavingComment, setIsSavingComment] = useState(false);
+  const [commentError, setCommentError] = useState('');
+  const checklistSectionRef = useRef<HTMLElement>(null);
+  const checklistInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const unsubscribe = getCardLive(cardId, (data: CardDetailsType) => {
@@ -32,6 +65,12 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
 
     return () => unsubscribe();
   }, [cardId]);
+
+  useEffect(() => {
+    if (!isChecklistOpen) return;
+    checklistSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    checklistInputRef.current?.focus({ preventScroll: true });
+  }, [isChecklistOpen]);
 
   useEffect(() => {
     let isCurrent = true;
@@ -100,6 +139,108 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
   const assignedMembers = boardMembers.filter(member => assignedMemberUids.includes(member.uid));
   const availableMembers = boardMembers.filter(member => !assignedMemberUids.includes(member.uid));
   const selectedLabels = cardDetails.labels ?? [];
+  const checklistItems = Object.entries(cardDetails.checklistItems ?? {});
+  const comments = Object.entries(cardDetails.comments ?? {}).sort(
+    ([, first], [, second]) => first.createdAt - second.createdAt
+  );
+  const deadlineDate = cardDetails.deadline ? new Date(cardDetails.deadline) : null;
+  const deadlineText = deadlineDate && !Number.isNaN(deadlineDate.getTime())
+    ? deadlineDate.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+    : '';
+
+  const submitComment = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = commentText.trim();
+    if (!text || !userData || isSavingComment) return;
+
+    setIsSavingComment(true);
+    setCommentError('');
+    try {
+      await addCardComment(cardId, userData.uid, text);
+      setCommentText('');
+    } catch (error) {
+      console.error('Could not add the card comment:', error);
+      setCommentError('Could not send your comment. Please try again.');
+    } finally {
+      setIsSavingComment(false);
+    }
+  };
+
+  const saveDeadline = async () => {
+    if (isSavingDeadline) return;
+
+    const previousDeadline = cardDetails.deadline;
+    const updatedDeadline = deadlineInput ? new Date(deadlineInput).toISOString() : '';
+    setIsSavingDeadline(true);
+    setDeadlineError('');
+    setCardDetails(current => ({ ...current, deadline: updatedDeadline || undefined }));
+
+    try {
+      await updateCardDeadline(cardId, updatedDeadline);
+      setIsDeadlineEditorOpen(false);
+    } catch (error) {
+      console.error('Could not save the card deadline:', error);
+      setCardDetails(current => ({ ...current, deadline: previousDeadline }));
+      setDeadlineInput(toLocalDateTimeValue(previousDeadline));
+      setDeadlineError('Could not save the deadline. Please try again.');
+    } finally {
+      setIsSavingDeadline(false);
+    }
+  };
+
+  const addChecklistItem = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const text = newChecklistItem.trim();
+    if (!text || isSavingChecklist) return;
+
+    setIsSavingChecklist(true);
+    setChecklistError('');
+    try {
+      await addCardChecklistItem(cardId, text);
+      setNewChecklistItem('');
+    } catch (error) {
+      console.error('Could not add a checklist item:', error);
+      setChecklistError('Could not add this item. Please try again.');
+    } finally {
+      setIsSavingChecklist(false);
+    }
+  };
+
+  const setChecklistItemCompleted = async (itemId: string, completed: boolean) => {
+    if (isSavingChecklist) return;
+
+    setIsSavingChecklist(true);
+    setChecklistError('');
+    try {
+      await updateCardChecklistItem(cardId, itemId, completed);
+    } catch (error) {
+      console.error('Could not update a checklist item:', error);
+      setChecklistError('Could not update this item. Please try again.');
+    } finally {
+      setIsSavingChecklist(false);
+    }
+  };
+
+  const deleteChecklistItem = async (itemId: string) => {
+    if (isSavingChecklist) return;
+
+    setIsSavingChecklist(true);
+    setChecklistError('');
+    try {
+      await removeCardChecklistItem(cardId, itemId);
+    } catch (error) {
+      console.error('Could not remove a checklist item:', error);
+      setChecklistError('Could not remove this item. Please try again.');
+    } finally {
+      setIsSavingChecklist(false);
+    }
+  };
 
   const saveLabels = (updatedLabels: string[]) => {
     if (isSavingLabels) return;
@@ -221,7 +362,7 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
       </button>
       {open && (
         <div className="modal modal-open">
-          <div className="modal-box">
+          <div className="modal-box max-h-[90vh] w-11/12 max-w-5xl overflow-y-auto">
             {isEditingName ? (
               <div>
                 <label htmlFor={`card-name-${cardId}`} className="mb-2 block font-medium">Card name</label>
@@ -319,8 +460,13 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
               {memberError && <p className="mt-2 text-sm text-error">{memberError}</p>}
             </div>
 
-            <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-[minmax(0,1fr)_10rem]">
+            <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(18rem,0.9fr)]">
               <div>
+                {deadlineText && (
+                  <p className="mb-3 text-sm opacity-80">
+                    <span className="font-medium">Deadline:</span> {deadlineText}
+                  </p>
+                )}
                 <label htmlFor={`card-description-${cardId}`} className="mb-2 block font-medium">Description</label>
                 {cardDetails.discription && !isEditingDescription ? (
                   <button
@@ -367,9 +513,61 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
                   </div>
                 )}
                 {labelError && <p className="mt-2 text-sm text-error">{labelError}</p>}
+                {isChecklistOpen && (
+                  <section id={`card-checklist-${cardId}`} ref={checklistSectionRef} className="mt-5 rounded-box bg-base-200 p-3" aria-labelledby={`checklist-title-${cardId}`}>
+                    <h4 id={`checklist-title-${cardId}`} className="mb-3 font-semibold">Checklist</h4>
+                    {checklistItems.length > 0 ? (
+                      <ul className="flex flex-col gap-2">
+                        {checklistItems.map(([itemId, item]) => (
+                          <li key={itemId} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              className="checkbox checkbox-warning checkbox-sm"
+                              checked={item.completed}
+                              onChange={event => void setChecklistItemCompleted(itemId, event.target.checked)}
+                              disabled={isSavingChecklist}
+                              aria-label={`Mark ${item.text} as ${item.completed ? 'incomplete' : 'complete'}`}
+                            />
+                            <span className={`min-w-0 flex-1 break-words text-sm ${item.completed ? 'text-base-content/60 line-through' : ''}`}>
+                              {item.text}
+                            </span>
+                            <button
+                              type="button"
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-sm leading-none transition-colors hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-yellow-600"
+                              onClick={() => void deleteChecklistItem(itemId)}
+                              disabled={isSavingChecklist}
+                              aria-label={`Delete checklist item ${item.text}`}
+                              title="Delete item"
+                            >
+                              ×
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mb-3 text-sm opacity-70">No items yet. Add the first one below.</p>
+                    )}
+
+                    <form className="mt-3 flex gap-2" onSubmit={addChecklistItem}>
+                      <input
+                        ref={checklistInputRef}
+                        type="text"
+                        className="input input-warning input-sm min-w-0 flex-1"
+                        value={newChecklistItem}
+                        onChange={event => setNewChecklistItem(event.target.value)}
+                        placeholder="Add a checklist item"
+                        aria-label="New checklist item"
+                      />
+                      <button type="submit" className="btn-primary" disabled={isSavingChecklist || !newChecklistItem.trim()}>
+                        Add item
+                      </button>
+                    </form>
+                    {checklistError && <p className="mt-2 text-sm text-error" role="alert">{checklistError}</p>}
+                  </section>
+                )}
               </div>
 
-              <div>
+              <div className="flex flex-col items-start gap-2">
                 <button
                   type="button"
                   className="btn-primary-hover"
@@ -401,8 +599,83 @@ const CardDetails = ({ cardId, initialCard }: CardDetailsProps) => {
                     })}
                   </ul>
                 )}
+
+                <button
+                  type="button"
+                  className="btn-primary-hover"
+                  onClick={() => {
+                    setDeadlineInput(toLocalDateTimeValue(cardDetails.deadline));
+                    setDeadlineError('');
+                    setIsDeadlineEditorOpen(current => !current);
+                  }}
+                  aria-expanded={isDeadlineEditorOpen}
+                  aria-controls={`card-deadline-editor-${cardId}`}
+                >
+                  Date &amp; time
+                </button>
+                {isDeadlineEditorOpen && (
+                  <div id={`card-deadline-editor-${cardId}`} className="w-full rounded-box bg-base-200 p-3">
+                    <label htmlFor={`card-deadline-${cardId}`} className="mb-2 block text-sm font-medium">Deadline</label>
+                    <input
+                      id={`card-deadline-${cardId}`}
+                      type="datetime-local"
+                      className="input input-warning min-h-12 w-full min-w-0 text-base"
+                      value={deadlineInput}
+                      onChange={event => setDeadlineInput(event.target.value)}
+                    />
+                    <button type="button" className="btn-primary mt-3" onClick={() => void saveDeadline()} disabled={isSavingDeadline}>
+                      {isSavingDeadline ? 'Saving…' : 'Save deadline'}
+                    </button>
+                    {deadlineError && <p className="mt-2 text-sm text-error" role="alert">{deadlineError}</p>}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="btn-primary-hover"
+                  onClick={() => setIsChecklistOpen(true)}
+                  aria-expanded={isChecklistOpen}
+                  aria-controls={`card-checklist-${cardId}`}
+                >
+                  Checklist
+                </button>
               </div>
             </div>
+
+            <section className="mt-6 border-t border-base-300 pt-4" aria-labelledby={`card-comments-title-${cardId}`}>
+              <h4 id={`card-comments-title-${cardId}`} className="font-semibold">Comments</h4>
+              <div className="custom-scroll mt-3 flex max-h-64 flex-col gap-3 overflow-y-auto pr-2" aria-live="polite">
+                {comments.length === 0 ? (
+                  <p className="text-sm opacity-70">No comments yet.</p>
+                ) : comments.map(([commentId, comment]) => {
+                  const isCurrentUser = comment.uid === userData?.uid;
+                  return (
+                    <div key={commentId} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                      <article className={`max-w-[85%] rounded-box px-3 py-2 ${isCurrentUser ? 'bg-amber-200 text-amber-950' : 'bg-base-200'}`}>
+                        <p className="whitespace-pre-wrap break-words text-sm">{comment.text}</p>
+                        <time className="mt-1 block text-right text-[10px] opacity-70" dateTime={new Date(comment.createdAt).toISOString()}>
+                          {new Date(comment.createdAt).toLocaleString()}
+                        </time>
+                      </article>
+                    </div>
+                  );
+                })}
+              </div>
+              <form className="mt-3 flex items-end gap-2" onSubmit={submitComment}>
+                <textarea
+                  className="textarea textarea-warning min-h-12 min-w-0 flex-1"
+                  rows={2}
+                  value={commentText}
+                  onChange={event => setCommentText(event.target.value)}
+                  placeholder="Write a comment…"
+                  aria-label="Write a comment"
+                />
+                <button type="submit" className="btn-primary" disabled={!userData || isSavingComment || !commentText.trim()}>
+                  {isSavingComment ? 'Sending…' : 'Send'}
+                </button>
+              </form>
+              {commentError && <p className="mt-2 text-sm text-error" role="alert">{commentError}</p>}
+            </section>
 
             <div className="modal-action">
               {detailsError && <p className="mr-auto text-sm text-error">{detailsError}</p>}
